@@ -1,0 +1,41 @@
+version: '3.8'  # Elimina esta línea si es obsoleta
+
+services:
+  app:
+    build: 
+      context: ./app
+    container_name: app_container
+    volumes:
+      - ./src:/app/src  # Asegúrate de que esta ruta sea correcta
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: tfm_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lzPostgre00
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+networks:
+  app_network:
+    driver: bridge
+  
+volumes:
+  db_data:

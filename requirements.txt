@@ -1,0 +1,11 @@
+fastapi
+django
+requests
+uvicorn
+yfinance
+pandas
+jinja2
+psycopg2-binary
+psycopg2
+sqlalchemy
+# End of Selection
