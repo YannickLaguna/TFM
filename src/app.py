@@ -6,6 +6,8 @@ import pandas as pd
 import psycopg2
 from psycopg2 import sql
 
+### rev, no funciona
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
