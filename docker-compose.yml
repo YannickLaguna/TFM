@@ -1,19 +1,8 @@
-version: '3.8'  # Elimina esta línea si es obsoleta
+version: '3.8'
 
 services:
-  app:
-    build: 
-      context: ./app
-    container_name: app_container
-    volumes:
-      - ./src:/app/src  # Asegúrate de que esta ruta sea correcta
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-
   db:
-    image: postgres
+    image: postgres:13
     container_name: postgres_db
     restart: always
     environment:
@@ -23,7 +12,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  web:
+    build: .
+    container_name: app_container
+    volumes:
+      - ./src:/app  # Monta el directorio src en /app dentro del contenedor
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:lzPostgre00@db:5432/tfm_db"
     networks:
       - app_network
 
@@ -38,4 +41,4 @@ networks:
     driver: bridge
   
 volumes:
-  db_data:
+  postgres_data:
