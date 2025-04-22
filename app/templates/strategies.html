@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Strategies</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+        .strategy-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .strategy-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .code-editor {
+            font-family: 'Courier New', Courier, monospace;
+            height: 300px;
+            resize: vertical;
+        }
+        .stats-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .positive {
+            color: #28a745;
+        }
+        .negative {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Financial Data Analysis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/data">Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/indicators">Indicators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/strategies">Strategies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <h1 class="mb-4">Trading Strategies</h1>
+        
+        <!-- Strategy Tabs -->
+        <ul class="nav nav-tabs mb-4" id="strategyTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="backtest-tab" data-bs-toggle="tab" data-bs-target="#backtest" type="button" role="tab" aria-controls="backtest" aria-selected="true">
+                    Backtest Strategy
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="false">
+                    Create Strategy
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="optimize-tab" data-bs-toggle="tab" data-bs-target="#optimize" type="button" role="tab" aria-controls="optimize" aria-selected="false">
+                    Optimize Strategy
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="strategyTabContent">
+            <!-- Backtest Strategy -->
+            <div class="tab-pane fade show active" id="backtest" role="tabpanel" aria-labelledby="backtest-tab">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Backtest Strategy
+                    </div>
+                    <div class="card-body">
+                        <form id="backtestForm">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="backtestStrategy" class="form-label">Strategy</label>
+                                    <select class="form-select" id="backtestStrategy" name="strategy_id" required>
+                                        <option value="">Select a strategy</option>
+                                        {% for strategy in strategies %}
+                                        <option value="{{ strategy.ID }}">{{ strategy.Name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="backtestTicker" class="form-label">Ticker Symbol</label>
+                                    <select class="form-select" id="backtestTicker" name="ticker" required>
+                                        <option value="">Select a ticker</option>
+                                        {% for ticker in tickers %}
+                                        <option value="{{ ticker }}">{{ ticker }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="backtestPeriod" class="form-label">Period</label>
+                                    <select class="form-select" id="backtestPeriod" name="period">
+                                        <option value="1mo">1 Month</option>
+                                        <option value="3mo">3 Months</option>
+                                        <option value="6mo">6 Months</option>
+                                        <option value="1y" selected>1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="5y">5 Years</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="initialCapital" class="form-label">Initial Capital</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="initialCapital" name="initial_capital" value="10000" min="100" step="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="commission" class="form-label">Commission Rate</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="commission" name="commission" value="0.001" min="0" max="0.1" step="0.0001">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-play-fill me-2"></i>Run Backtest
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Strategy Description -->
+                <div class="card mb-4" id="strategyDescriptionCard" style="display: none;">
+                    <div class="card-header">
+                        <span id="strategyName">Strategy Description</span>
+                    </div>
+                    <div class="card-body">
+                        <p id="strategyDescription"></p>
+                        <div class="mt-3">
+                            <h6>Parameters:</h6>
+                            <div id="strategyParameters"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Backtest Results -->
+                <div id="backtestResults" style="display: none;">
+                    <!-- Performance Metrics -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Performance Metrics
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Final Capital</div>
+                                        <div id="finalCapital" class="stats-value">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Total Return</div>
+                                        <div id="totalReturn" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Sharpe Ratio</div>
+                                        <div id="sharpeRatio" class="stats-value">0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Max Drawdown</div>
+                                        <div id="maxDrawdown" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Chart -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Performance Chart
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <img id="performanceChart" class="img-fluid" src="/placeholder.svg" alt="Performance Chart">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trade History -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Trade History
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Value</th>
+                                            <th>Commission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tradeHistory">
+                                        <!-- Trade history will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Create Strategy -->
+            <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Create New Strategy
+                    </div>
+                    <div class="card-body">
+                        <form id="createStrategyForm">
+                            <div class="mb-3">
+                                <label for="strategyName" class="form-label">Strategy Name</label>
+                                <input type="text" class="form-control" id="strategyName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="strategyDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="strategyDescription" name="description" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="strategyCode" class="form-label">Strategy Code</label>
+                                <textarea class="form-control code-editor" id="strategyCode" name="code" required></textarea>
+                                <div class="form-text">
+                                    Write your strategy code in Python. The function should be named 'strategy' and take parameters 'data' (DataFrame) and 'params' (dict).
+                                    It should return a DataFrame with 'signal' column (1 for buy, -1 for sell, 0 for hold).
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Parameters</label>
+                                <div id="parametersContainer">
+                                    <div class="row mb-2 parameter-row">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" name="param_name[]" placeholder="Parameter Name" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="number" class="form-control" name="param_value[]" placeholder="Default Value" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="button" class="btn btn-outline-danger remove-param">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" id="addParameterBtn">
+                                    <i class="bi bi-plus-circle me-2"></i>Add Parameter
+                                </button>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save me-2"></i>Save Strategy
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Strategy Template -->
+                <div class="card">
+                    <div class="card-header">
+                        Strategy Template
+                    </div>
+                    <div class="card-body">
+                        <pre class="bg-light p-3 rounded">
+def strategy(data, params):
+    """
+    Example strategy using moving average crossover
+    
+    Parameters:
+    data (DataFrame): OHLCV data with columns ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
+    params (dict): Strategy parameters
+    
+    Returns:
+    DataFrame: Original data with additional 'signal' column
+    """
+    # Get parameters
+    short_window = params.get('short_window', 20)
+    long_window = params.get('long_window', 50)
+    
+    # Calculate moving averages
+    data['short_ma'] = data['Close'].rolling(window=short_window).mean()
+    data['long_ma'] = data['Close'].rolling(window=long_window).mean()
+    
+    # Initialize signal column
+    data['signal'] = 0
+    
+    # Generate signals
+    data.loc[data['short_ma'] > data['long_ma'], 'signal'] = 1  # Buy signal
+    data.loc[data['short_ma'] < data['long_ma'], 'signal'] = -1  # Sell signal
+    
+    return data
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Optimize Strategy -->
+            <div class="tab-pane fade" id="optimize" role="tabpanel" aria-labelledby="optimize-tab">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Optimize Strategy Parameters
+                    </div>
+                    <div class="card-body">
+                        <form id="optimizeForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="optimizeStrategy" class="form-label">Strategy</label>
+                                    <select class="form-select" id="optimizeStrategy" name="strategy_id" required>
+                                        <option value="">Select a strategy</option>
+                                        {% for strategy in strategies %}
+                                        <option value="{{ strategy.ID }}">{{ strategy.Name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="optimizeTicker" class="form-label">Ticker Symbol</label>
+                                    <select class="form-select" id="optimizeTicker" name="ticker" required>
+                                        <option value="">Select a ticker</option>
+                                        {% for ticker in tickers %}
+                                        <option value="{{ ticker }}">{{ ticker }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="optimizePeriod" class="form-label">Period</label>
+                                    <select class="form-select" id="optimizePeriod" name="period">
+                                        <option value="1mo">1 Month</option>
+                                        <option value="3mo">3 Months</option>
+                                        <option value="6mo">6 Months</option>
+                                        <option value="1y" selected>1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="5y">5 Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="optimizeMetric" class="form-label">Optimization Metric</label>
+                                    <select class="form-select" id="optimizeMetric" name="metric">
+                                        <option value="sharpe_ratio" selected>Sharpe Ratio</option>
+                                        <option value="returns">Total Returns</option>
+                                        <option value="max_drawdown">Minimize Max Drawdown</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Parameter Ranges</label>
+                                <div id="paramRangesContainer">
+                                    <!-- Parameter ranges will be populated here -->
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-gear-fill me-2"></i>Optimize
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Optimization Results -->
+                <div id="optimizationResults" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Optimization Results
+                        </div>
+                        <div class="card-body">
+                            <h5>Best Parameters:</h5>
+                            <div id="bestParameters" class="mb-4"></div>
+                            
+                            <h5>Performance:</h5>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Final Capital</div>
+                                        <div id="optFinalCapital" class="stats-value">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Total Return</div>
+                                        <div id="optTotalReturn" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Sharpe Ratio</div>
+                                        <div id="optSharpeRatio" class="stats-value">0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Max Drawdown</div>
+                                        <div id="optMaxDrawdown" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container mt-4">
+                                <img id="optimizationChart" class="img-fluid" src="/placeholder.svg" alt="Optimization Chart">
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <button type="button" class="btn btn-success" id="saveOptimizedBtn">
+                                    <i class="bi bi-save me-2"></i>Save as New Strategy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center my-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2" id="loadingText">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Financial Data Analysis Application</h5>
+                    <p>A comprehensive platform for financial data analysis, technical indicators, and strategy backtesting.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white">Home</a></li>
+                        <li><a href="/dashboard" class="text-white">Dashboard</a></li>
+                        <li><a href="/data" class="text-white">Data</a></li>
+                        <li><a href="/analysis" class="text-white">Analysis</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>More</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/indicators" class="text-white">Indicators</a></li>
+                        <li><a href="/strategies" class="text-white">Strategies</a></li>
+                        <li><a href="/reports" class="text-white">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Financial Data Analysis. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const tickerParam = urlParams.get('ticker');
+            const periodParam = urlParams.get('period');
+            const optimizeParam = urlParams.get('optimize');
+            
+            // Set form values from URL parameters if available
+            if (tickerParam) {
+                const tickerSelects = document.querySelectorAll('#backtestTicker, #optimizeTicker');
+                tickerSelects.forEach(select => {
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === tickerParam) {
+                            select.selectedIndex = i;
+                            break;
+                        }
+                    }
+                });
+                
+                if (periodParam) {
+                    const periodSelects = document.querySelectorAll('#backtestPeriod, #optimizePeriod');
+                    periodSelects.forEach(select => {
+                        for (let i = 0; i < select.options.length; i++) {
+                            if (select.options[i].value === periodParam) {
+                                select.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    });
+                }
+                
+                // Switch to optimize tab if optimize parameter is true
+                if (optimizeParam === 'true') {
+                    const optimizeTab = document.getElementById('optimize-tab');
+                    const optimizeTabInstance = new bootstrap.Tab(optimizeTab);
+                    optimizeTabInstance.show();
+                }
+            }
+            
+            // Handle backtest strategy selection
+            const backtestStrategySelect = document.getElementById('backtestStrategy');
+            const strategyDescriptionCard = document.getElementById('strategyDescriptionCard');
+            
+            backtestStrategySelect.addEventListener('change', function() {
+                const strategyId = this.value;
+                
+                if (strategyId) {
+                    // Fetch strategy details
+                    fetch(`/api/strategies/${strategyId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update strategy description
+                                document.getElementById('strategyName').textContent = data.strategy.Name;
+                                document.getElementById('strategyDescription').textContent = data.strategy.Description;
+                                
+                                // Update parameters
+                                const paramsContainer = document.getElementById('strategyParameters');
+                                paramsContainer.innerHTML = '';
+                                
+                                const params = JSON.parse(data.strategy.Parameters);
+                                for (const [key, value] of Object.entries(params)) {
+                                    const paramRow = document.createElement('div');
+                                    paramRow.className = 'mb-2';
+                                    paramRow.innerHTML = `<strong>${key}:</strong> ${value}`;
+                                    paramsContainer.appendChild(paramRow);
+                                }
+                                
+                                // Show strategy description card
+                                strategyDescriptionCard.style.display = 'block';
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching strategy details');
+                        });
+                } else {
+                    // Hide strategy description card
+                    strategyDescriptionCard.style.display = 'none';
+                }
+            });
+            
+            // Handle backtest form submission
+            const backtestForm = document.getElementById('backtestForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const loadingText = document.getElementById('loadingText');
+            const backtestResults = document.getElementById('backtestResults');
+            
+            backtestForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const strategyId = document.getElementById('backtestStrategy').value;
+                const ticker = document.getElementById('backtestTicker').value;
+                
+                if (!strategyId || !ticker) {
+                    alert('Please select both strategy and ticker');
+                    return;
+                }
+                
+                // Show loading indicator
+                backtestResults.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                loadingText.textContent = 'Running backtest...';
+                
+                // Prepare form data
+                const formData = new FormData(backtestForm);
+                const formDataObj = {};
+                formData.forEach((value, key) => {
+                    formDataObj[key] = value;
+                });
+                
+                // Run backtest
+                fetch('/run-backtest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formDataObj)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update performance metrics
+                        document.getElementById('finalCapital').textContent = '$' + data.backtest.final_capital.toFixed(2);
+                        
+                        const totalReturn = data.backtest.returns * 100;
+                        const totalReturnElement = document.getElementById('totalReturn');
+                        totalReturnElement.textContent = totalReturn.toFixed(2) + '%';
+                        totalReturnElement.className = 'stats-value ' + (totalReturn >= 0 ? 'positive' : 'negative');
+                        
+                        document.getElementById('sharpeRatio').textContent = data.backtest.sharpe_ratio.toFixed(2);
+                        document.getElementById('maxDrawdown').textContent = (data.backtest.max_drawdown * 100).toFixed(2) + '%';
+                        
+                        // Update performance chart
+                        document.getElementById('performanceChart').src = data.backtest.performance_chart;
+                        
+                        // Update trade history
+                        const tradeHistoryTable = document.getElementById('tradeHistory');
+                        tradeHistoryTable.innerHTML = '';
+                        
+                        data.backtest.trades.forEach(trade => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${trade.date}</td>
+                                <td>${trade.action}</td>
+                                <td>$${trade.price.toFixed(2)}</td>
+                                <td>${trade.quantity}</td>
+                                <td>$${trade.value.toFixed(2)}</td>
+                                <td>$${trade.commission.toFixed(2)}</td>
+                            `;
+                            tradeHistoryTable.appendChild(row);
+                        });
+                        
+                        // Show results
+                        backtestResults.style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while running backtest');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+            
+            // Handle create strategy form
+            const createStrategyForm = document.getElementById('createStrategyForm');
+            const addParameterBtn = document.getElementById('addParameterBtn');
+            const parametersContainer = document.getElementById('parametersContainer');
+            
+            // Add parameter row
+            addParameterBtn.addEventListener('click', function() {
+                const paramRow = document.createElement('div');
+                paramRow.className = 'row mb-2 parameter-row';
+                paramRow.innerHTML = `
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="param_name[]" placeholder="Parameter Name" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" class="form-control" name="param_value[]" placeholder="Default Value" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-danger remove-param">Remove</button>
+                    </div>
+                `;
+                parametersContainer.appendChild(paramRow);
+                
+                // Add event listener to remove button
+                paramRow.querySelector('.remove-param').addEventListener('click', function() {
+                    paramRow.remove();
+                });
+            });
+            
+            // Remove parameter row
+            parametersContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-param')) {
+                    e.target.closest('.parameter-row').remove();
+                }
+            });
+            
+            // Handle create strategy form submission
+            createStrategyForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                loadingText.textContent = 'Saving strategy...';
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('name', document.getElementById('strategyName').value);
+                formData.append('description', document.getElementById('strategyDescription').value);
+                formData.append('code', document.getElementById('strategyCode').value);
+                
+                // Prepare parameters
+                const paramNames = Array.from(document.getElementsByName('param_name[]')).map(input => input.value);
+                const paramValues = Array.from(document.getElementsByName('param_value[]')).map(input => parseFloat(input.value));
+                
+                const parameters = {};
+                for (let i = 0; i < paramNames.length; i++) {
+                    parameters[paramNames[i]] = paramValues[i];
+                }
+                
+                formData.append('parameters', JSON.stringify(parameters));
+                
+                // Create strategy
+                fetch('/create-strategy', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Strategy created successfully!');
+                        // Reload page to update strategy list
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating strategy');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+            
+            // Handle optimize strategy selection
+            const optimizeStrategySelect = document.getElementById('optimizeStrategy');
+            const paramRangesContainer = document.getElementById('paramRangesContainer');
+            
+            optimizeStrategySelect.addEventListener('change', function() {
+                const strategyId = this.value;
+                
+                if (strategyId) {
+                    // Fetch strategy details
+                    fetch(`/api/strategies/${strategyId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update parameter ranges
+                                paramRan  {
+                                // Update parameter ranges
+                                paramRangesContainer.innerHTML = '';
+                                
+                                const params = JSON.parse(data.strategy.Parameters);
+                                for (const [key, value] of Object.entries(params)) {
+                                    const paramRow = document.createElement('div');
+                                    paramRow.className = 'row mb-3';
+                                    paramRow.innerHTML = `
+                                        <div class="col-md-4">
+                                            <label class="form-label">${key}</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Min</span>
+                                                <input type="number" class="form-control" name="param_min_${key}" value="${value * 0.5}" step="0.1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Max</span>
+                                                <input type="number" class="form-control" name="param_max_${key}" value="${value * 1.5}" step="0.1">
+                                            </div>
+                                        </div>
+                                    `;
+                                    paramRangesContainer.appendChild(paramRow);
+                                }
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while fetching strategy details');
+                        });
+                } else {
+                    // Clear parameter ranges
+                    paramRangesContainer.innerHTML = '';
+                }
+            });
+            
+            // Handle optimize form submission
+            const optimizeForm = document.getElementById('optimizeForm');
+            const optimizationResults = document.getElementById('optimizationResults');
+            
+            optimizeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const strategyId = document.getElementById('optimizeStrategy').value;
+                const ticker = document.getElementById('optimizeTicker').value;
+                
+                if (!strategyId || !ticker) {
+                    alert('Please select both strategy and ticker');
+                    return;
+                }
+                
+                // Show loading indicator
+                optimizationResults.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                loadingText.textContent = 'Optimizing strategy...';
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('strategy_id', strategyId);
+                formData.append('ticker', ticker);
+                formData.append('period', document.getElementById('optimizePeriod').value);
+                formData.append('metric', document.getElementById('optimizeMetric').value);
+                
+                // Prepare parameter ranges
+                const paramRanges = {};
+                const paramInputs = paramRangesContainer.querySelectorAll('input');
+                paramInputs.forEach(input => {
+                    const name = input.name;
+                    const value = parseFloat(input.value);
+                    
+                    if (name.startsWith('param_min_')) {
+                        const paramName = name.replace('param_min_', '');
+                        if (!paramRanges[paramName]) {
+                            paramRanges[paramName] = {};
+                        }
+                        paramRanges[paramName].min = value;
+                    } else if (name.startsWith('param_max_')) {
+                        const paramName = name.replace('param_max_', '');
+                        if (!paramRanges[paramName]) {
+                            paramRanges[paramName] = {};
+                        }
+                        paramRanges[paramName].max = value;
+                    }
+                });
+                
+                formData.append('parameters_range', JSON.stringify(paramRanges));
+                
+                // Optimize strategy
+                fetch('/optimize-strategy', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update best parameters
+                        const bestParamsContainer = document.getElementById('bestParameters');
+                        bestParamsContainer.innerHTML = '';
+                        
+                        for (const [key, value] of Object.entries(data.optimization.best_params)) {
+                            const paramRow = document.createElement('div');
+                            paramRow.className = 'mb-2';
+                            paramRow.innerHTML = `<strong>${key}:</strong> ${value.toFixed(2)}`;
+                            bestParamsContainer.appendChild(paramRow);
+                        }
+                        
+                        // Update performance metrics
+                        document.getElementById('optFinalCapital').textContent = '$' + data.optimization.performance.final_capital.toFixed(2);
+                        
+                        const totalReturn = data.optimization.performance.returns * 100;
+                        const totalReturnElement = document.getElementById('optTotalReturn');
+                        totalReturnElement.textContent = totalReturn.toFixed(2) + '%';
+                        totalReturnElement.className = 'stats-value ' + (totalReturn >= 0 ? 'positive' : 'negative');
+                        
+                        document.getElementById('optSharpeRatio').textContent = data.optimization.performance.sharpe_ratio.toFixed(2);
+                        document.getElementById('optMaxDrawdown').textContent = (data.optimization.performance.max_drawdown * 100).toFixed(2) + '%';
+                        
+                        // Update optimization chart
+                        document.getElementById('optimizationChart').src = data.optimization.chart;
+                        
+                        // Show results
+                        optimizationResults.style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while optimizing strategy');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+            
+            // Handle save optimized strategy button
+            const saveOptimizedBtn = document.getElementById('saveOptimizedBtn');
+            
+            saveOptimizedBtn.addEventListener('click', function() {
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                loadingText.textContent = 'Saving optimized strategy...';
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('strategy_id', document.getElementById('optimizeStrategy').value);
+                formData.append('best_params', document.getElementById('bestParameters').innerHTML);
+                
+                // Save optimized strategy
+                fetch('/save-optimized-strategy', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Optimized strategy saved successfully!');
+                        // Reload page to update strategy list
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving optimized strategy');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

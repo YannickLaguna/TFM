@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Indicators</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+        .indicator-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .indicator-card:hover {
+            transform: translateY(-5px);
+        }
+        .chart-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Financial Data Analysis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/data">Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/indicators">Indicators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/strategies">Strategies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <h1 class="mb-4">Technical Indicators</h1>
+        
+        <!-- Indicator Selection Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Select Ticker and Indicator
+            </div>
+            <div class="card-body">
+                <form id="indicatorForm">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="ticker" class="form-label">Ticker Symbol</label>
+                            <select class="form-select" id="ticker" name="ticker" required>
+                                <option value="">Select a ticker</option>
+                                {% for ticker in tickers %}
+                                <option value="{{ ticker }}">{{ ticker }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="indicator" class="form-label">Indicator</label>
+                            <select class="form-select" id="indicator" name="indicator" required>
+                                <option value="">Select an indicator</option>
+                                <option value="moving_average">Moving Average (MA)</option>
+                                <option value="ema">Exponential Moving Average (EMA)</option>
+                                <option value="rsi">Relative Strength Index (RSI)</option>
+                                <option value="bollinger">Bollinger Bands</option>
+                                <option value="macd">MACD</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="period" class="form-label">Period</label>
+                            <select class="form-select" id="period" name="period">
+                                <option value="1mo">1 Month</option>
+                                <option value="3mo">3 Months</option>
+                                <option value="6mo">6 Months</option>
+                                <option value="1y" selected>1 Year</option>
+                                <option value="2y">2 Years</option>
+                                <option value="5y">5 Years</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Indicator Parameters -->
+                    <div id="indicatorParams">
+                        <!-- Parameters will be dynamically shown based on selected indicator -->
+                        <div class="row mb-3" id="maParams" style="display: none;">
+                            <div class="col-md-4">
+                                <label for="window" class="form-label">Window Size</label>
+                                <input type="number" class="form-control" id="window" name="window" value="20" min="1" max="200">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3" id="bollingerParams" style="display: none;">
+                            <div class="col-md-4">
+                                <label for="window" class="form-label">Window Size</label>
+                                <input type="number" class="form-control" id="bollingerWindow" name="window" value="20" min="1" max="200">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="num_std" class="form-label">Standard Deviations</label>
+                                <input type="number" class="form-control" id="num_std" name="num_std" value="2" min="0.5" max="4" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3" id="macdParams" style="display: none;">
+                            <div class="col-md-4">
+                                <label for="fast_period" class="form-label">Fast Period</label>
+                                <input type="number" class="form-control" id="fast_period" name="fast_period" value="12" min="1" max="50">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="slow_period" class="form-label">Slow Period</label>
+                                <input type="number" class="form-control" id="slow_period" name="slow_period" value="26" min="1" max="100">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="signal_period" class="form-label">Signal Period</label>
+                                <input type="number" class="form-control" id="signal_period" name="signal_period" value="9" min="1" max="50">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-graph-up me-2"></i>Generate Indicator
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Indicator Description -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Indicator Description
+            </div>
+            <div class="card-body">
+                <div id="indicatorDescription">
+                    <p class="text-center text-muted">Select an indicator to see its description</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Indicator Chart -->
+        <div class="card" id="chartCard" style="display: none;">
+            <div class="card-header">
+                <span id="chartTitle">Indicator Chart</span>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <img id="indicatorChart" class="img-fluid" src="/placeholder.svg" alt="Indicator Chart">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center my-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Generating indicator...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Financial Data Analysis Application</h5>
+                    <p>A comprehensive platform for financial data analysis, technical indicators, and strategy backtesting.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white">Home</a></li>
+                        <li><a href="/dashboard" class="text-white">Dashboard</a></li>
+                        <li><a href="/data" class="text-white">Data</a></li>
+                        <li><a href="/analysis" class="text-white">Analysis</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>More</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/indicators" class="text-white">Indicators</a></li>
+                        <li><a href="/strategies" class="text-white">Strategies</a></li>
+                        <li><a href="/reports" class="text-white">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Financial Data Analysis. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const tickerParam = urlParams.get('ticker');
+            const periodParam = urlParams.get('period');
+            const indicatorParam = urlParams.get('indicator');
+            
+            // Set form values from URL parameters if available
+            if (tickerParam) {
+                const tickerSelect = document.getElementById('ticker');
+                for (let i = 0; i < tickerSelect.options.length; i++) {
+                    if (tickerSelect.options[i].value === tickerParam) {
+                        tickerSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (periodParam) {
+                const periodSelect = document.getElementById('period');
+                for (let i = 0; i < periodSelect.options.length; i++) {
+                    if (periodSelect.options[i].value === periodParam) {
+                        periodSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (indicatorParam) {
+                const indicatorSelect = document.getElementById('indicator');
+                for (let i = 0; i < indicatorSelect.options.length; i++) {
+                    if (indicatorSelect.options[i].value === indicatorParam) {
+                        indicatorSelect.selectedIndex = i;
+                        updateIndicatorDescription(indicatorParam);
+                        showIndicatorParams(indicatorParam);
+                        break;
+                    }
+                }
+                
+                // Automatically submit the form if all parameters are provided
+                if (tickerParam) {
+                    document.getElementById('indicatorForm').dispatchEvent(new Event('submit'));
+                }
+            }
+            
+            // Handle indicator selection change
+            const indicatorSelect = document.getElementById('indicator');
+            indicatorSelect.addEventListener('change', function() {
+                const indicator = this.value;
+                updateIndicatorDescription(indicator);
+                showIndicatorParams(indicator);
+            });
+            
+            // Handle form submission
+            const indicatorForm = document.getElementById('indicatorForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const chartCard = document.getElementById('chartCard');
+            
+            indicatorForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const ticker = document.getElementById('ticker').value;
+                const indicator = document.getElementById('indicator').value;
+                const period = document.getElementById('period').value;
+                
+                if (!ticker || !indicator) {
+                    alert('Please select both ticker and indicator');
+                    return;
+                }
+                
+                // Show loading indicator
+                chartCard.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                
+                // Prepare form data based on selected indicator
+                let formData = `ticker=${ticker}&indicator=${indicator}&period=${period}`;
+                
+                if (indicator === 'moving_average' || indicator === 'ema' || indicator === 'rsi') {
+                    const window = document.getElementById('window').value;
+                    formData += `&window=${window}`;
+                } else if (indicator === 'bollinger') {
+                    const window = document.getElementById('bollingerWindow').value;
+                    const numStd = document.getElementById('num_std').value;
+                    formData += `&window=${window}&num_std=${numStd}`;
+                } else if (indicator === 'macd') {
+                    const fastPeriod = document.getElementById('fast_period').value;
+                    const slowPeriod = document.getElementById('slow_period').value;
+                    const signalPeriod = document.getElementById('signal_period').value;
+                    formData += `&fast_period=${fastPeriod}&slow_period=${slowPeriod}&signal_period=${signalPeriod}`;
+                }
+                
+                // Fetch and plot indicator
+                fetch('/plot-indicator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update chart
+                        document.getElementById('indicatorChart').src = data.plot;
+                        
+                        // Update chart title
+                        let indicatorName = indicatorSelect.options[indicatorSelect.selectedIndex].text;
+                        document.getElementById('chartTitle').textContent = `${indicatorName} for ${ticker}`;
+                        
+                        // Show chart
+                        chartCard.style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while generating the indicator');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+            
+            // Function to update indicator description
+            function updateIndicatorDescription(indicator) {
+                const descriptionDiv = document.getElementById('indicatorDescription');
+                
+                switch (indicator) {
+                    case 'moving_average':
+                        descriptionDiv.innerHTML = `
+                            <h5>Moving Average (MA)</h5>
+                            <p>A moving average is a technical indicator that helps smooth out price action by filtering out the "noise" from random price fluctuations. It is a trend-following, or lagging, indicator because it is based on past prices.</p>
+                            <p><strong>Calculation:</strong> The simple moving average is calculated by adding the closing price of the security for a number of time periods and then dividing this total by the number of time periods.</p>
+                            <p><strong>Interpretation:</strong> When the price crosses above the moving average, it can be a bullish signal. When the price crosses below the moving average, it can be a bearish signal.</p>
+                        `;
+                        break;
+                    case 'ema':
+                        descriptionDiv.innerHTML = `
+                            <h5>Exponential Moving Average (EMA)</h5>
+                            <p>The Exponential Moving Average (EMA) is a type of moving average that places a greater weight and significance on the most recent data points. The EMA is more responsive to new information relative to the Simple Moving Average (SMA).</p>
+                            <p><strong>Calculation:</strong> EMA = Price(t) * k + EMA(y) * (1 – k)<br>where t = today, y = yesterday, k = 2/(N+1), and N = the number of periods.</p>
+                            <p><strong>Interpretation:</strong> Similar to the SMA, the EMA is used to identify trends. However, the EMA reacts more quickly to recent price changes than the SMA.</p>
+                        `;
+                        break;
+                    case 'rsi':
+                        descriptionDiv.innerHTML = `
+                            <h5>Relative Strength Index (RSI)</h5>
+                            <p>The Relative Strength Index (RSI) is a momentum oscillator that measures the speed and change of price movements. The RSI oscillates between zero and 100.</p>
+                            <p><strong>Calculation:</strong> RSI = 100 - (100 / (1 + RS))<br>where RS = Average Gain / Average Loss over a specified period.</p>
+                            <p><strong>Interpretation:</strong> Traditionally, RSI is considered overbought when above 70 and oversold when below 30. Signals can also be generated by looking for divergences, failure swings, and centerline crossovers.</p>
+                        `;
+                        break;
+                    case 'bollinger':
+                        descriptionDiv.innerHTML = `
+                            <h5>Bollinger Bands</h5>
+                            <p>Bollinger Bands are a volatility indicator that consists of a moving average (the middle band) and two standard deviation lines (the upper and lower bands).</p>
+                            <p><strong>Calculation:</strong><br>
+                            Middle Band = 20-day simple moving average (SMA)<br>
+                            Upper Band = 20-day SMA + (20-day standard deviation of price x 2)<br>
+                            Lower Band = 20-day SMA - (20-day standard deviation of price x 2)</p>
+                            <p><strong>Interpretation:</strong> The bands expand when volatility increases and contract when volatility decreases. Prices are considered overbought when they touch the upper band and oversold when they touch the lower band.</p>
+                        `;
+                        break;
+                    case 'macd':
+                        descriptionDiv.innerHTML = `
+                            <h5>Moving Average Convergence Divergence (MACD)</h5>
+                            <p>The Moving Average Convergence Divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of a security's price.</p>
+                            <p><strong>Calculation:</strong><br>
+                            MACD Line = 12-day EMA - 26-day EMA<br>
+                            Signal Line = 9-day EMA of MACD Line<br>
+                            MACD Histogram = MACD Line - Signal Line</p>
+                            <p><strong>Interpretation:</strong> The MACD generates signals when it crosses above (bullish) or below (bearish) its signal line. The MACD histogram represents the difference between the MACD line and the signal line. Divergence between the MACD and price can also be a powerful signal.</p>
+                        `;
+                        break;
+                    default:
+                        descriptionDiv.innerHTML = `<p class="text-center text-muted">Select an indicator to see its description</p>`;
+                }
+            }
+            
+            // Function to show/hide indicator parameters
+            function showIndicatorParams(indicator) {
+                // Hide all parameter divs
+                document.getElementById('maParams').style.display = 'none';
+                document.getElementById('bollingerParams').style.display = 'none';
+                document.getElementById('macdParams').style.display = 'none';
+                
+                // Show relevant parameter div
+                if (indicator === 'moving_average' || indicator === 'ema' || indicator === 'rsi') {
+                    document.getElementById('maParams').style.display = 'flex';
+                } else if (indicator === 'bollinger') {
+                    document.getElementById('bollingerParams').style.display = 'flex';
+                } else if (indicator === 'macd') {
+                    document.getElementById('macdParams').style.display = 'flex';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

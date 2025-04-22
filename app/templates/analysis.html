@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+        .stats-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .positive {
+            color: #28a745;
+        }
+        .negative {
+            color: #dc3545;
+        }
+        .chart-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Financial Data Analysis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/data">Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/indicators">Indicators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/strategies">Strategies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <h1 class="mb-4">Financial Analysis</h1>
+        
+        <!-- Analysis Type Tabs -->
+        <ul class="nav nav-tabs mb-4" id="analysisTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="single-tab" data-bs-toggle="tab" data-bs-target="#single" type="button" role="tab" aria-controls="single" aria-selected="true">
+                    Single Asset Analysis
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="correlation-tab" data-bs-toggle="tab" data-bs-target="#correlation" type="button" role="tab" aria-controls="correlation" aria-selected="false">
+                    Correlation Analysis
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="analysisTabContent">
+            <!-- Single Asset Analysis -->
+            <div class="tab-pane fade show active" id="single" role="tabpanel" aria-labelledby="single-tab">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Single Asset Analysis
+                    </div>
+                    <div class="card-body">
+                        <form id="singleAnalysisForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="singleTicker" class="form-label">Ticker Symbol</label>
+                                    <select class="form-select" id="singleTicker" name="ticker" required>
+                                        <option value="">Select a ticker</option>
+                                        {% for ticker in tickers %}
+                                        <option value="{{ ticker }}">{{ ticker }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="singlePeriod" class="form-label">Period</label>
+                                    <select class="form-select" id="singlePeriod" name="period">
+                                        <option value="1mo">1 Month</option>
+                                        <option value="3mo">3 Months</option>
+                                        <option value="6mo">6 Months</option>
+                                        <option value="1y" selected>1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="5y">5 Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-graph-up me-2"></i>Analyze
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Single Analysis Results -->
+                <div id="singleAnalysisResults" style="display: none;">
+                    <!-- Key Stats -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <span id="singleAnalysisTitle">Analysis Results</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Current Price</div>
+                                        <div id="currentPrice" class="stats-value">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Change</div>
+                                        <div id="priceChange" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Volatility</div>
+                                        <div id="volatility" class="stats-value">0.00%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Avg. Volume</div>
+                                        <div id="avgVolume" class="stats-value">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Min Price</div>
+                                        <div id="minPrice" class="stats-value">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Max Price</div>
+                                        <div id="maxPrice" class="stats-value">$0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">Start Date</div>
+                                        <div id="startDate" class="stats-value">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="text-center">
+                                        <div class="stats-label">End Date</div>
+                                        <div id="endDate" class="stats-value">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Price Chart
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="priceChart" class="img-fluid" src="/placeholder.svg" alt="Price Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Volume Chart
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="volumeChart" class="img-fluid" src="/placeholder.svg" alt="Volume Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Moving Averages
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="maChart" class="img-fluid" src="/placeholder.svg" alt="Moving Averages Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    RSI
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="rsiChart" class="img-fluid" src="/placeholder.svg" alt="RSI Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Bollinger Bands
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="bollingerChart" class="img-fluid" src="/placeholder.svg" alt="Bollinger Bands Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    MACD
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <img id="macdChart" class="img-fluid" src="/placeholder.svg" alt="MACD Chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            Quick Actions
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <button id="backtestBtn" class="btn btn-outline-primary w-100 mb-2">Run Backtest</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button id="optimizeBtn" class="btn btn-outline-success w-100 mb-2">Optimize Strategy</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button id="indicatorsBtn" class="btn btn-outline-warning w-100 mb-2">Custom Indicators</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button id="reportBtn" class="btn btn-outline-info w-100 mb-2">Generate Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Correlation Analysis -->
+            <div class="tab-pane fade" id="correlation" role="tabpanel" aria-labelledby="correlation-tab">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Correlation Analysis
+                    </div>
+                    <div class="card-body">
+                        <form id="correlationAnalysisForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="correlationTickers" class="form-label">Ticker Symbols</label>
+                                    <input type="text" class="form-control" id="correlationTickers" name="tickers" placeholder="e.g., AAPL, MSFT, GOOGL" required>
+                                    <div class="form-text">Enter multiple tickers separated by commas (2-10 tickers recommended)</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="correlationPeriod" class="form-label">Period</label>
+                                    <select class="form-select" id="correlationPeriod" name="period">
+                                        <option value="1mo">1 Month</option>
+                                        <option value="3mo">3 Months</option>
+                                        <option value="6mo">6 Months</option>
+                                        <option value="1y" selected>1 Year</option>
+                                        <option value="2y">2 Years</option>
+                                        <option value="5y">5 Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-graph-up me-2"></i>Analyze Correlation
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Correlation Analysis Results -->
+                <div id="correlationResults" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Correlation Matrix
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <img id="correlationHeatmap" class="img-fluid" src="/placeholder.svg" alt="Correlation Heatmap">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Price Comparison
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <img id="priceComparison" class="img-fluid" src="/placeholder.svg" alt="Price Comparison Chart">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center my-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Analyzing data...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Financial Data Analysis Application</h5>
+                    <p>A comprehensive platform for financial data analysis, technical indicators, and strategy backtesting.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white">Home</a></li>
+                        <li><a href="/dashboard" class="text-white">Dashboard</a></li>
+                        <li><a href="/data" class="text-white">Data</a></li>
+                        <li><a href="/analysis" class="text-white">Analysis</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>More</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/indicators" class="text-white">Indicators</a></li>
+                        <li><a href="/strategies" class="text-white">Strategies</a></li>
+                        <li><a href="/reports" class="text-white">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Financial Data Analysis. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const tickerParam = urlParams.get('ticker');
+            const periodParam = urlParams.get('period');
+            
+            // Set form values from URL parameters if available
+            if (tickerParam) {
+                const singleTickerSelect = document.getElementById('singleTicker');
+                for (let i = 0; i < singleTickerSelect.options.length; i++) {
+                    if (singleTickerSelect.options[i].value === tickerParam) {
+                        singleTickerSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                if (periodParam) {
+                    const singlePeriodSelect = document.getElementById('singlePeriod');
+                    for (let i = 0; i < singlePeriodSelect.options.length; i++) {
+                        if (singlePeriodSelect.options[i].value === periodParam) {
+                            singlePeriodSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                
+                // Automatically submit the form if ticker is provided
+                document.getElementById('singleAnalysisForm').dispatchEvent(new Event('submit'));
+            }
+            
+            // Handle single analysis form submission
+            const singleAnalysisForm = document.getElementById('singleAnalysisForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const singleAnalysisResults = document.getElementById('singleAnalysisResults');
+            
+            singleAnalysisForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const ticker = document.getElementById('singleTicker').value;
+                const period = document.getElementById('singlePeriod').value;
+                
+                if (!ticker) {
+                    alert('Please select a ticker');
+                    return;
+                }
+                
+                // Show loading indicator
+                singleAnalysisResults.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                
+                // Update title
+                document.getElementById('singleAnalysisTitle').textContent = `Analysis Results: ${ticker}`;
+                
+                // Fetch and analyze data
+                fetch('/analyze-ticker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `ticker=${ticker}&period=${period}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update stats
+                        document.getElementById('currentPrice').textContent = '$' + data.analysis.stats.current_price.toFixed(2);
+                        
+                        const changePercent = data.analysis.stats.change_percent;
+                        const priceChangeElement = document.getElementById('priceChange');
+                        priceChangeElement.textContent = changePercent.toFixed(2) + '%';
+                        priceChangeElement.className = 'stats-value ' + (changePercent >= 0 ? 'positive' : 'negative');
+                        
+                        document.getElementById('volatility').textContent = data.analysis.stats.volatility.toFixed(2) + '%';
+                        
+                        const volume = data.analysis.stats.avg_volume;
+                        document.getElementById('avgVolume').textContent = volume >= 1000000 
+                            ? (volume / 1000000).toFixed(2) + 'M' 
+                            : volume >= 1000 
+                                ? (volume / 1000).toFixed(2) + 'K' 
+                                : volume.toFixed(0);
+                        
+                        document.getElementById('minPrice').textContent = '$' + data.analysis.stats.min_price.toFixed(2);
+                        document.getElementById('maxPrice').textContent = '$' + data.analysis.stats.max_price.toFixed(2);
+                        document.getElementById('startDate').textContent = data.analysis.stats.start_date;
+                        document.getElementById('endDate').textContent = data.analysis.stats.end_date;
+                        
+                        // Update charts
+                        document.getElementById('priceChart').src = data.analysis.plots.price_chart;
+                        document.getElementById('volumeChart').src = data.analysis.plots.volume_chart;
+                        document.getElementById('maChart').src = data.analysis.plots.ma_chart;
+                        document.getElementById('rsiChart').src = data.analysis.plots.rsi_chart;
+                        document.getElementById('bollingerChart').src = data.analysis.plots.bollinger_chart;
+                        document.getElementById('macdChart').src = data.analysis.plots.macd_chart;
+                        
+                        // Setup quick action buttons
+                        document.getElementById('backtestBtn').onclick = () => window.location.href = `/strategies?ticker=${ticker}&period=${period}`;
+                        document.getElementById('optimizeBtn').onclick = () => window.location.href = `/strategies?ticker=${ticker}&period=${period}&optimize=true`;
+                        document.getElementById('indicatorsBtn').onclick = () => window.location.href = `/indicators?ticker=${ticker}&period=${period}`;
+                        document.getElementById('reportBtn').onclick = () => window.location.href = `/reports?ticker=${ticker}&period=${period}`;
+                        
+                        // Show results
+                        singleAnalysisResults.style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while analyzing data');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+            
+            // Handle correlation analysis form submission
+            const correlationAnalysisForm = document.getElementById('correlationAnalysisForm');
+            const correlationResults = document.getElementById('correlationResults');
+            
+            correlationAnalysisForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const tickers = document.getElementById('correlationTickers').value;
+                const period = document.getElementById('correlationPeriod').value;
+                
+                if (!tickers) {
+                    alert('Please enter ticker symbols');
+                    return;
+                }
+                
+                // Show loading indicator
+                correlationResults.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+                
+                // Fetch and analyze correlation
+                fetch('/analyze-correlation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `tickers=${tickers}&period=${period}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update charts
+                        document.getElementById('correlationHeatmap').src = data.correlation.heatmap;
+                        document.getElementById('priceComparison').src = data.correlation.price_comparison;
+                        
+                        // Show results
+                        correlationResults.style.display = 'block';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while analyzing correlation');
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

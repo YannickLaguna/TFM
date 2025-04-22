@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Data Analysis Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+        .jumbotron {
+            background-color: #e9ecef;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Financial Data Analysis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/data">Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/indicators">Indicators</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/strategies">Strategies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Hero Section -->
+        <div class="jumbotron">
+            <h1 class="display-4">Financial Data Analysis</h1>
+            <p class="lead">A comprehensive platform for analyzing financial data, testing trading strategies, and optimizing investment decisions.</p>
+            <hr class="my-4">
+            <p>Get started by exploring the dashboard or downloading financial data for your favorite stocks.</p>
+            <a class="btn btn-primary btn-lg" href="/dashboard" role="button">Go to Dashboard</a>
+        </div>
+
+        <!-- Features -->
+        <h2 class="text-center mb-4">Features</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-download"></i>
+                        </div>
+                        <h5 class="card-title">Data Fetching</h5>
+                        <p class="card-text">Download historical financial data from various sources and store it in a local database for quick access.</p>
+                        <a href="/data" class="btn btn-outline-primary">Fetch Data</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h5 class="card-title">Technical Analysis</h5>
+                        <p class="card-text">Perform technical analysis using various indicators like Moving Averages, RSI, MACD, and Bollinger Bands.</p>
+                        <a href="/indicators" class="btn btn-outline-primary">View Indicators</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-gear"></i>
+                        </div>
+                        <h5 class="card-title">Strategy Backtesting</h5>
+                        <p class="card-text">Test trading strategies on historical data to evaluate their performance before risking real money.</p>
+                        <a href="/strategies" class="btn btn-outline-primary">Backtest Strategies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-sliders"></i>
+                        </div>
+                        <h5 class="card-title">Parameter Optimization</h5>
+                        <p class="card-text">Optimize strategy parameters to find the best configuration for maximum returns or risk-adjusted performance.</p>
+                        <a href="/strategies" class="btn btn-outline-primary">Optimize Parameters</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-bar-chart"></i>
+                        </div>
+                        <h5 class="card-title">Correlation Analysis</h5>
+                        <p class="card-text">Analyze correlations between different assets to build diversified portfolios and manage risk.</p>
+                        <a href="/analysis" class="btn btn-outline-primary">Analyze Correlations</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h5 class="card-title">Comprehensive Reports</h5>
+                        <p class="card-text">Generate detailed reports with analysis results, backtesting performance, and optimization recommendations.</p>
+                        <a href="/reports" class="btn btn-outline-primary">Generate Reports</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <div class="mt-5">
+            <h2 class="text-center mb-4">Quick Start</h2>
+            <div class="card">
+                <div class="card-header">
+                    Get Started in 3 Simple Steps
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-inline-block p-3" style="width: 50px; height: 50px;">
+                                    <h3 class="m-0">1</h3>
+                                </div>
+                            </div>
+                            <h5 class="text-center">Fetch Data</h5>
+                            <p class="text-center">Download historical data for your favorite stocks from Yahoo Finance.</p>
+                            <div class="text-center">
+                                <a href="/data" class="btn btn-sm btn-primary">Go to Data Page</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-inline-block p-3" style="width: 50px; height: 50px;">
+                                    <h3 class="m-0">2</h3>
+                                </div>
+                            </div>
+                            <h5 class="text-center">Analyze</h5>
+                            <p class="text-center">Perform technical analysis and visualize indicators.</p>
+                            <div class="text-center">
+                                <a href="/analysis" class="btn btn-sm btn-primary">Go to Analysis Page</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-inline-block p-3" style="width: 50px; height: 50px;">
+                                    <h3 class="m-0">3</h3>
+                                </div>
+                            </div>
+                            <h5 class="text-center">Backtest</h5>
+                            <p class="text-center">Test trading strategies on historical data.</p>
+                            <div class="text-center">
+                                <a href="/strategies" class="btn btn-sm btn-primary">Go to Strategies Page</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Financial Data Analysis Application</h5>
+                    <p>A comprehensive platform for financial data analysis, technical indicators, and strategy backtesting.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white">Home</a></li>
+                        <li><a href="/dashboard" class="text-white">Dashboard</a></li>
+                        <li><a href="/data" class="text-white">Data</a></li>
+                        <li><a href="/analysis" class="text-white">Analysis</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>More</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/indicators" class="text-white">Indicators</a></li>
+                        <li><a href="/strategies" class="text-white">Strategies</a></li>
+                        <li><a href="/reports" class="text-white">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2023 Financial Data Analysis. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

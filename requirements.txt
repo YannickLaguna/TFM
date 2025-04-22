@@ -1,0 +1,17 @@
+fastapi
+django
+requests
+uvicorn
+yfinance
+numpy
+seaborn
+matplotlib
+plotly
+pandas
+jinja2
+psycopg2-binary
+psycopg2
+sqlalchemy
+scikit-learn
+python-multipart
+# End of Selection
