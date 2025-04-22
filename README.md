@@ -1,4 +1,3 @@
-TODO subir a github, eliminando el venv y asegurarme de que al profe le funcione
 TODO conseguir que la DB sea completamente funcional, que funcione la descarga de distintos tickers, que se puedan eliminar los datos y que se puedan visualizar
 # Financial Data Analysis Application
 
@@ -51,9 +50,11 @@ Esta aplicación permite a los usuarios:
    cd <nombre-del-directorio>
    \`\`\`
 
-2. Crea un entorno virtual:
+2. Crea un entorno virtual y concede permisos:
    \`\`\`bash
    python -m venv finpy
+    
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process 
    \`\`\`
 
 3. Activa el entorno virtual:
