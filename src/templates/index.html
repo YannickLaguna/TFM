@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Financieros</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Datos Financieros</h1>
+    <div id="candlestick-chart"></div>
+    <div id="indicator-chart"></div>
+
+    <script>
+        // Datos de ejemplo para velas japonesas
+        var candlestickData = [{
+            x: ['2023-01-01', '2023-01-02', '2023-01-03'],
+            close: [120, 130, 125],
+            decreasing: {line: {color: 'red'}},
+            high: [125, 135, 130],
+            increasing: {line: {color: 'green'}},
+            low: [115, 125, 120],
+            open: [118, 128, 123],
+            type: 'candlestick',
+            xaxis: 'x',
+            yaxis: 'y'
+        }];
+
+        // Configuración del gráfico de velas japonesas
+        var layoutCandlestick = {
+            title: 'Gráfico de Velas Japonesas',
+            xaxis: {title: 'Fecha'},
+            yaxis: {title: 'Precio'}
+        };
+
+        Plotly.newPlot('candlestick-chart', candlestickData, layoutCandlestick);
+
+        // Datos de ejemplo para indicadores
+        var indicatorData = [{
+            x: ['2023-01-01', '2023-01-02', '2023-01-03'],
+            y: [10, 15, 13],
+            type: 'scatter'
+        }];
+
+        // Configuración del gráfico de indicadores
+        var layoutIndicator = {
+            title: 'Indicadores Técnicos',
+            xaxis: {title: 'Fecha'},
+            yaxis: {title: 'Valor'}
+        };
+
+        Plotly.newPlot('indicator-chart', indicatorData, layoutIndicator);
+    </script>
+</body>
+</html>

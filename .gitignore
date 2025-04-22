@@ -1,0 +1,35 @@
+```
+// Start of Selection
+# Entornos virtuales
+finpy/
+env/
+venv/
+pyvenv.cfg
+
+# Archivos de compilación de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de configuración del entorno
+*.env
+*.env.local
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
+
+# Archivos de log y temporales
+*.log
+*.tmp
+test_results/
+
+# Archivos de Docker
+docker-compose.override.yml
+
+# Archivos de datos generados
+data/graficos/
+data/reportes/
+
+# Base de datos
+data/TFM.db

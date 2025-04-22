@@ -1,3 +1,5 @@
+TODO subir a github, eliminando el venv y asegurarme de que al profe le funcione
+TODO conseguir que la DB sea completamente funcional, que funcione la descarga de distintos tickers, que se puedan eliminar los datos y que se puedan visualizar
 # Financial Data Analysis Application
 
 Una aplicación web para análisis de datos financieros, backtesting de estrategias y visualización de indicadores técnicos.
@@ -51,17 +53,17 @@ Esta aplicación permite a los usuarios:
 
 2. Crea un entorno virtual:
    \`\`\`bash
-   python -m venv venv
+   python -m venv finpy
    \`\`\`
 
 3. Activa el entorno virtual:
    - En Windows:
      \`\`\`bash
-     venv\Scripts\activate
+     finpy\Scripts\activate
      \`\`\`
    - En macOS/Linux:
      \`\`\`bash
-     source venv/bin/activate
+     source finpy/bin/activate
      \`\`\`
 
 4. Instala las dependencias:

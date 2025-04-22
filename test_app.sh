@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para probar la aplicación de análisis financiero
+# Script para probar la aplicación de análisis financiero -- IGNORAR
 
 # Crear directorio para pruebas
 mkdir -p test_results
