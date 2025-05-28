@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import sqlite3
 import yfinance as yf
@@ -13,7 +12,7 @@ data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__
 os.makedirs(data_dir, exist_ok=True)
 
 # SQLite database path
-DB_PATH = os.path.join(data_dir, 'TFM.db')
+DB_PATH = os.path.join(os.path.dirname(__file__), 'TFM.db')
 URL_DATABASE = f'sqlite:///{DB_PATH}'
 
 # Create the engine and session with SQLAlchemy

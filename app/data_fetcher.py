@@ -18,10 +18,10 @@ def fetch_ticker_data(ticker, period, interval):
     interval : str
         Intervalo entre los puntos de datos (por ejemplo, '1d', '1wk').
 
-    Returns
+    Devuelve
     -------
     pandas.DataFrame
-        Devuelve un DataFrame con los datos descargados, o None si ocurren errores
+        Un DataFrame con los datos descargados, o None si ocurren errores
         o si el DataFrame se encuentra vacío.
     """
     try:
@@ -39,7 +39,7 @@ def fetch_ticker_data(ticker, period, interval):
 
 def store_ticker_data(ticker, data):
     """
-    Store ticker data in the database
+    Almacena los datos de un símbolo en la base de datos.
     
     Args:
         ticker (str): The ticker symbol

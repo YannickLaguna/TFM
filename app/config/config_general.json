@@ -1,0 +1,18 @@
+{
+ "database": {
+    "path": "data/TFM.db",
+    "url": "sqlite:///data/TFM.db"
+ },
+ "data_dir": "data",
+ "data_dir_yfinance": "data/yfinance", # por ahora solo descargamos datos de yfinance, si fuera necesario ampliar fuentes, se podrían añadir aquí
+ "logging": {
+    "level": "INFO",
+    "file": "logs/app.log"
+ },
+ "test_mode": {
+    "enabled": false,
+    "data_dir": "test_data"
+ }
+}
+
+TODO revisar y completar
