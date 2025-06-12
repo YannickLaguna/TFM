@@ -1,10 +1,13 @@
 ```
 // Start of Selection
-# Entornos virtuales
+# Paths
 finpy/
 env/
 venv/
 pyvenv.cfg
+## Carpeta de revisión
+Revisar/
+app/DB/TFM.db
 
 # Archivos de compilación de Python
 __pycache__/
@@ -32,4 +35,3 @@ data/graficos/
 data/reportes/
 
 # Base de datos
-data/TFM.db

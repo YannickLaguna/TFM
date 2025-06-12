@@ -1,9 +1,9 @@
 TODO conseguir que la DB sea completamente funcional, que funcione la descarga de distintos tickers, que se puedan eliminar los datos y que se puedan visualizar
-# Financial Data Analysis Application
+TODO incluir distinción entre usuarios, en principio como la idea es que funcione en local no debería hacer falta por ahora.
+# TODO agregar botón finalizar aplicación
+# TODO data pipeline testing
 
 Una aplicación web para análisis de datos financieros, backtesting de estrategias y visualización de indicadores técnicos.
-
-## Descripción
 
 Esta aplicación permite a los usuarios:
 
@@ -13,10 +13,15 @@ Esta aplicación permite a los usuarios:
 - Optimizar los parámetros de las estrategias para mejorar el rendimiento
 - Generar informes completos para ayudar en la toma de decisiones
 
+# Ejecución de scripts
+La primera vez que descargues este repositorio, ejecuta el isguiente comando:
+bash ./scripts/setup_ini.sh
+
+Después puedes ejecutar el archivo main.py o ejecutar.py
 ## Requisitos previos
 
-- Python 3.8 o superior
-- pip (gestor de paquetes de Python)
+- Python 3.3 o superior
+- pip instalado
 - Docker y Docker Compose (opcional, para instalación con Docker)
 - Git (opcional, para clonar el repositorio)
 
@@ -60,7 +65,7 @@ Esta aplicación permite a los usuarios:
 3. Activa el entorno virtual:
    - En Windows:
      \`\`\`bash
-     finpy\Scripts\activate
+     source finpy/Scripts/activate
      \`\`\`
    - En macOS/Linux:
      \`\`\`bash
